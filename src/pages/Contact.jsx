@@ -7,7 +7,7 @@ const Contact = () => {
   const [status, setStatus] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  const backend = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+  const backend = import.meta.env.VITE_BACKEND_URL || "https://learning-management-system-backend-5aet.onrender.com";
 
   const validate = () => {
     const errs = {};

@@ -16,7 +16,7 @@ const Courses = () => {
 
   const [loading, setLoading] = useState(false);
   const searchTimeout = useRef(null);
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://learning-management-system-backend-5aet.onrender.com";
   const dispatch = useDispatch();
 
   const coursesList = useSelector((state) => state.courses.list);

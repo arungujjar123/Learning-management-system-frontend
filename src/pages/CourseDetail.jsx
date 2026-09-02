@@ -30,8 +30,9 @@ const CourseDetail = () => {
       const token = localStorage.getItem("token");
       if (!token) return;
       try {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://learning-management-system-backend-5aet.onrender.com";
         const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/student/profile`,
+          `${backendUrl}/student/profile`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -53,7 +54,7 @@ const CourseDetail = () => {
   useEffect(() => {
     async function getCourseById() {
       try {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://learning-management-system-backend-5aet.onrender.com";
         const response = await fetch(`${backendUrl}/courses`);
         const coursesResponse = await response.json();
 

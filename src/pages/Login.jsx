@@ -36,7 +36,7 @@ const Login = () => {
 
   const { login } = useAuth();
   const backendUrl =
-    import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+    import.meta.env.VITE_BACKEND_URL || "https://learning-management-system-backend-5aet.onrender.com";
 
   const validateField = (name, value) => {
     let error = "";

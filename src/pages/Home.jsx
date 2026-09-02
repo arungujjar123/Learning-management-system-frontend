@@ -50,7 +50,7 @@ const Home = () => {
 
   const fetchCourses = async () => {
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://learning-management-system-backend-5aet.onrender.com";
       let response = await fetch(`${backendUrl}/courses`);
       if (!response.ok) {
         response = await fetch(`${backendUrl}/student/all-courses`);
@@ -75,7 +75,7 @@ const Home = () => {
 
   const fetchStats = async () => {
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://learning-management-system-backend-5aet.onrender.com";
       const response = await fetch(`${backendUrl}/stats`);
       const data = await response.json();
 

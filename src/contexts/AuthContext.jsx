@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (formData, setFormData) => {
     try {
       const backendUrl =
-        import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+        import.meta.env.VITE_BACKEND_URL || "https://learning-management-system-backend-5aet.onrender.com";
       const response = await fetch(`${backendUrl}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

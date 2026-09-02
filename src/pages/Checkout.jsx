@@ -17,7 +17,7 @@ const Checkout = () => {
   const navigate = useNavigate();
   const cartItems = (location.state && location.state.cartItems) || [];
   const total = (location.state && location.state.total) || 0;
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+  const backendUrl = import.meta.env.VITE_BACKEND_URL || "https://learning-management-system-backend-5aet.onrender.com";
 
   const [cardNumber, setCardNumber] = useState("");
   const [cvv, setCvv] = useState("");
