@@ -318,6 +318,9 @@ const AddCourse = () => {
         } else {
           navigate("/teacher/courses");
         }
+      } else {
+        // e.g. 403 when the teacher's qualification is not verified yet
+        alert(coursesResponse?.message || "Could not create course");
       }
     } catch (err) {
       console.log("error occured", err);

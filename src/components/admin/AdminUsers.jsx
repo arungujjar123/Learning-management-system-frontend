@@ -229,7 +229,7 @@ const AdminUsers = () => {
                     <h4 className="text-base font-bold text-slate-900">{teacher.name}</h4>
                     <span
                       className={`px-2 py-0.5 rounded-full text-[11px] font-semibold border ${
-                        teacher.verificationStatus === "Approved"
+                        teacher.verificationStatus === "Verified"
                           ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                           : teacher.verificationStatus === "Pending"
                           ? "bg-amber-50 text-amber-700 border-amber-200"
