@@ -1,11 +1,11 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Star, Users, ShoppingCart, Play, Eye } from "lucide-react";
+import { getRatingDisplay } from "../helper/rating";
 
 const CourseCard = ({ course, onAddToCart, isOwned = false, isAuthenticated = false }) => {
-  const ratingAverage = course && typeof course.rating === "object" ? course.rating.average : course.rating || 4.8;
-  const ratingCount = course && typeof course.rating === "object" ? course.rating.count : (course.ratingCount || 120);
-  const studentCount = course.students?.length || course.studentCount || "150+";
+  const rating = getRatingDisplay(course?.rating);
+  const studentCount = course.students?.length ?? course.studentCount ?? 0;
 
   return (
     <div className="bg-white border border-slate-200/80 hover:border-cyan-500/50 rounded-3xl overflow-hidden shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
@@ -39,12 +39,12 @@ const CourseCard = ({ course, onAddToCart, isOwned = false, isAuthenticated = fa
           <div className="flex items-center justify-between text-xs text-slate-500">
             <div className="flex items-center gap-1.5 font-semibold">
               <Star className="w-4 h-4 text-amber-500 fill-amber-400" />
-              <span className="font-bold text-slate-900">{ratingAverage}</span>
-              <span className="text-slate-400">({ratingCount})</span>
+              <span className="font-bold text-slate-900">{rating.label}</span>
+              {rating.hasRatings && <span className="text-slate-400">({rating.count})</span>}
             </div>
             <div className="flex items-center gap-1.5 font-medium text-slate-500">
               <Users className="w-3.5 h-3.5 text-slate-400" />
-              <span>{studentCount} learners</span>
+              <span>{studentCount} {studentCount === 1 ? "learner" : "learners"}</span>
             </div>
           </div>
 

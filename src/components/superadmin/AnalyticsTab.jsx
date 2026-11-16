@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useSuperAdmin } from "../../contexts/SuperAdminContext";
 import {
-  LineChart,
+  ComposedChart,
   Line,
   BarChart,
   Bar,
@@ -67,6 +67,8 @@ const AnalyticsTab = () => {
     }
   };
 
+  const bucketLabel = analytics.enrollmentTrends?.unit === "week" ? "Weekly" : "Daily";
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[40vh] font-sans">
@@ -87,7 +89,7 @@ const AnalyticsTab = () => {
             <TrendingUp className="w-6 h-6 text-cyan-600" />
             Executive Platform Analytics
           </h2>
-          <p className="text-xs text-slate-500 font-medium">Real-time revenue split, user growth velocity, and course performance metrics</p>
+          <p className="text-xs text-slate-500 font-medium">Revenue from completed orders, student sign-ups and enrollments over the selected period</p>
         </div>
 
         <select
@@ -152,14 +154,16 @@ const AnalyticsTab = () => {
               Student Growth Velocity
             </h3>
             <ResponsiveContainer width="100%" height={260}>
-              <LineChart data={analytics.userGrowth.studentGrowth}>
+              <ComposedChart data={analytics.userGrowth.studentGrowth}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="_id" stroke="#64748b" fontSize={12} />
-                <YAxis stroke="#64748b" fontSize={12} />
+                <XAxis dataKey="_id" stroke="#64748b" fontSize={12} minTickGap={16} />
+                <YAxis stroke="#64748b" fontSize={12} allowDecimals={false} />
+                <YAxis yAxisId="new" orientation="right" stroke="#64748b" fontSize={12} allowDecimals={false} />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="count" stroke="#0284c7" strokeWidth={3} name="Total Students" dot={{ r: 4 }} />
-              </LineChart>
+                <Line type="monotone" dataKey="count" stroke="#0284c7" strokeWidth={3} name="Total Students" dot={false} />
+                <Bar yAxisId="new" dataKey="newStudents" fill="#0d9488" name="New Sign-ups" radius={[4, 4, 0, 0]} />
+              </ComposedChart>
             </ResponsiveContainer>
           </div>
         )}
@@ -169,20 +173,28 @@ const AnalyticsTab = () => {
           <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-4">
             <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-3">
               <TrendingUp className="w-5 h-5 text-teal-600" />
-              Weekly Enrollment & Revenue Trends
+              {bucketLabel} Enrollment & Revenue Trends
             </h3>
             <ResponsiveContainer width="100%" height={260}>
-              <LineChart data={analytics.enrollmentTrends.dailyTrends}>
+              {/* Revenue (₹) and enrollments (count) use separate axes so neither line is flattened */}
+              <ComposedChart data={analytics.enrollmentTrends.dailyTrends}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                <XAxis dataKey="_id" stroke="#64748b" fontSize={12} />
-                <YAxis stroke="#64748b" fontSize={12} />
+                <XAxis dataKey="_id" stroke="#64748b" fontSize={12} minTickGap={16} />
+                <YAxis yAxisId="count" stroke="#64748b" fontSize={12} allowDecimals={false} />
+                <YAxis
+                  yAxisId="revenue"
+                  orientation="right"
+                  stroke="#64748b"
+                  fontSize={12}
+                  tickFormatter={(v) => `₹${v.toLocaleString()}`}
+                />
                 <Tooltip
                   formatter={(value, name) => (name === "Revenue" ? `₹${value.toLocaleString()}` : value)}
                 />
                 <Legend />
-                <Line type="monotone" dataKey="enrollments" stroke="#0d9488" strokeWidth={3} name="Enrollments" />
-                <Line type="monotone" dataKey="revenue" stroke="#2563eb" strokeWidth={3} name="Revenue" />
-              </LineChart>
+                <Bar yAxisId="count" dataKey="enrollments" fill="#0d9488" name="Enrollments" radius={[4, 4, 0, 0]} />
+                <Line yAxisId="revenue" type="monotone" dataKey="revenue" stroke="#2563eb" strokeWidth={3} name="Revenue" dot={false} />
+              </ComposedChart>
             </ResponsiveContainer>
           </div>
         )}
@@ -193,7 +205,7 @@ const AnalyticsTab = () => {
         <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-4">
           <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2 border-b border-slate-100 pb-3">
             <BookOpen className="w-5 h-5 text-cyan-600" />
-            Category Share Distribution
+            Enrollments by Category (all time)
           </h3>
           <ResponsiveContainer width="100%" height={260}>
             <PieChart>

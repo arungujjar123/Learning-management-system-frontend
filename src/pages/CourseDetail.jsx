@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { addToCart } from "../features/cart/cartSlice";
+import { getRatingDisplay } from "../helper/rating";
 import {
   FaStar,
   FaPlay,
@@ -114,8 +115,7 @@ const CourseDetail = () => {
     );
   }
 
-  const ratingAvg = course.rating?.average || 4.8;
-  const ratingCount = course.rating?.count || 64;
+  const rating = getRatingDisplay(course.rating);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -153,8 +153,8 @@ const CourseDetail = () => {
             <div className="flex flex-wrap items-center gap-6 pt-2 text-xs text-slate-300 border-t border-white/10">
               <div className="flex items-center gap-1.5">
                 <FaStar className="text-amber-400" />
-                <span className="font-bold text-white text-sm">{ratingAvg}</span>
-                <span>({ratingCount} reviews)</span>
+                <span className="font-bold text-white text-sm">{rating.label}</span>
+                <span>({rating.countLabel})</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <FaChalkboardTeacher className="text-violet-400" />
@@ -411,4 +411,4 @@ const CourseDetail = () => {
   );
 };
 
-export default CourseDetail;
+export default CourseDetail;

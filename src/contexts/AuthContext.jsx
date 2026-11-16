@@ -1,6 +1,19 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { setAuthToken } from "../api/axios";
+import api, { setAuthToken } from "../api/axios";
+
+// Reads the "exp" claim (ms since epoch) without verifying; the server verifies.
+function getTokenExpiry(token) {
+  try {
+    const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    const { exp } = JSON.parse(atob(base64));
+    return typeof exp === "number" ? exp * 1000 : null;
+  } catch {
+    return null;
+  }
+}
+
+const MAX_TIMEOUT_MS = 2 ** 31 - 1; // setTimeout limit (~24.8 days)
 
 const AuthContext = createContext();
 
@@ -9,10 +22,83 @@ export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(null);
   const [role, setRole] = useState(null);
 
+  const sessionEnding = useRef(false);
+
+  // Called when the token expires or the server rejects it (401), e.g. after
+  // an admin deactivates the account.
+  const endSession = useCallback(
+    (message) => {
+      if (sessionEnding.current) return;
+      sessionEnding.current = true;
+      localStorage.removeItem("token");
+      localStorage.removeItem("role");
+      setAuthToken(null);
+      setToken(null);
+      setRole(null);
+      navigate("/login", { replace: true });
+      if (message) alert(message);
+    },
+    [navigate]
+  );
+
   useEffect(() => {
     setToken(localStorage.getItem("token"));
     setRole(localStorage.getItem("role"));
   }, []);
+
+  // Log out when the token's expiry time is reached
+  useEffect(() => {
+    if (!token) return;
+    sessionEnding.current = false;
+    setAuthToken(token);
+    const expiresAt = getTokenExpiry(token);
+    if (!expiresAt) return;
+    const remaining = expiresAt - Date.now();
+    if (remaining <= 0) {
+      endSession("Your session has expired. Please log in again.");
+      return;
+    }
+    const timer = setTimeout(
+      () => endSession("Your session has expired. Please log in again."),
+      Math.min(remaining, MAX_TIMEOUT_MS)
+    );
+    return () => clearTimeout(timer);
+  }, [token, endSession]);
+
+  // Log out on any 401 from the backend, for both fetch and axios calls
+  useEffect(() => {
+    const handle401 = async (status, readMessage) => {
+      if (status !== 401 || !localStorage.getItem("token")) return;
+      const serverMessage = await readMessage().catch(() => null);
+      endSession(
+        serverMessage === "This account has been deactivated"
+          ? "Your account has been deactivated. Please contact an administrator."
+          : "Your session has expired. Please log in again."
+      );
+    };
+
+    const originalFetch = window.fetch;
+    window.fetch = async (...args) => {
+      const response = await originalFetch(...args);
+      if (response.status === 401) {
+        handle401(401, async () => (await response.clone().json())?.message);
+      }
+      return response;
+    };
+
+    const interceptor = api.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        handle401(error.response?.status, async () => error.response?.data?.message);
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      window.fetch = originalFetch;
+      api.interceptors.response.eject(interceptor);
+    };
+  }, [endSession]);
 
   const login = async (formData, setFormData) => {
     try {

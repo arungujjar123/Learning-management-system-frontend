@@ -538,7 +538,6 @@ const Login = () => {
                         <option value="">Choose role...</option>
                         <option value="Student">Student</option>
                         <option value="Teacher">Teacher</option>
-                        <option value="Admin">Admin</option>
                       </select>
                     </div>
                     {errors.role && touched.role && (

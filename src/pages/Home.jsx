@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { motion } from "framer-motion";
 import { addToCart } from "../features/cart/cartSlice";
+import { getRatingDisplay } from "../helper/rating";
 import {
   Sparkles,
   ArrowRight,
@@ -522,8 +523,8 @@ const Home = () => {
                       <div className="p-6 space-y-4">
                         <div className="flex items-center gap-1.5 text-xs text-amber-500 font-semibold">
                           <Star className="w-4 h-4 fill-amber-400" />
-                          <span className="text-slate-900 font-bold">{course.rating?.average || "4.8"}</span>
-                          <span className="text-slate-400">({course.rating?.count || "48"} reviews)</span>
+                          <span className="text-slate-900 font-bold">{getRatingDisplay(course.rating).label}</span>
+                          <span className="text-slate-400">({getRatingDisplay(course.rating).countLabel})</span>
                         </div>
 
                         <Link to={`/courses/${course._id}`}>
